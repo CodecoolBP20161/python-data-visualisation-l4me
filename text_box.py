@@ -1,4 +1,5 @@
 from db import Db
+from datetime import datetime
 
 
 class TextBox():
@@ -32,15 +33,15 @@ class TextBox():
             avg_color[2]//=clients[i]
             text = i
             if counter < 1:
-                size = 5
-            elif counter < 5:
                 size = 4
-            elif counter < 13:
+            elif counter < 5:
                 size = 3
-            elif counter < 27:
+            elif counter < 13:
                 size = 2
-            else:
+            elif counter < 27:
                 size = 1
+            else:
+                size = 0
             color = tuple(avg_color)
             text_boxes.append(TextBox(text, size, color))
             counter +=1
@@ -57,9 +58,11 @@ class TextBox():
         lista_color = [TextBox.normalize_color(i[2]) for i in data if i[0] != None]
         currency = [(i[3]) for i in data if i[0] != None]
         budget = [i[1] for i in data if i[0] != None]
+
         currency = map(int, currency)
         budget = map(float, budget)
         exchanged_budget = [a*b for a,b in zip(budget, currency)]
+
         ultimate = [[x, lista_color[i]] for i, x in enumerate(project_lista)]
         a_ultimate = [[x[0],x[1], exchanged_budget[i]] for i,x in enumerate(ultimate)]
         a_ultimate= list(sorted(a_ultimate, key = lambda x: x[2], reverse = True))
@@ -71,21 +74,35 @@ class TextBox():
             text = i[0]
             color = tuple(i[1])
             if counter < 1:
-                size = 5
-            elif counter < 5:
                 size = 4
-            elif counter < 17:
+            elif counter < 5:
                 size = 3
-            elif counter < 42:
+            elif counter < 17:
                 size = 2
-            else:
+            elif counter < 42:
                 size = 1
+            else:
+                size = 0
             text_boxes.append(TextBox(text,size,color))
             counter +=1
 
         return text_boxes
        # for i in text_boxes:
         #    print(i.text, i.size, i.color)
+
+    '''
+    @staticmethod
+    def date():
+        data = Db.execute_query("SELECT name, duedate, main_color FROM project WHERE name != 'None'")
+        name = [x[0] for x in data if x[0] != None]
+        date = [datetime.datetime(x[1]) for x in data if x[0] != None]
+        color = [TextBox.normalize_color([2]) for x in data if x[0] != None]
+        print(name)
+        print(date)
+        print(color)
+    '''
+
+
 
 
     @staticmethod
@@ -103,3 +120,4 @@ class TextBox():
 
 TextBox.project()
 TextBox.client()
+#TextBox.date()
