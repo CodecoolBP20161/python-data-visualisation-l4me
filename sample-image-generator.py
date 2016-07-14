@@ -5,10 +5,9 @@ import random
 from text_box import TextBox
 
 
-
 def image_generator(text_boxes):
     img = Image.new("RGB", (600, 600), "lightgrey")
-    font_size = [8, 16, 22, 26, 48]
+    font_size = [8, 16, 22, 26, 46]
     fonts = [ImageFont.truetype("Font_1.ttf", font_size[i]) for i in range(5)]
     sizes = [(60, 15), (120, 30), (180, 45), (240, 60), (300, 75)]
     available = [True]*400
@@ -32,6 +31,3 @@ def image_generator(text_boxes):
         img.paste(text_box, (x*60, y*15))
     img.save('sample-out.png')
     img.show()
-
-
-image_generator(TextBox.project())

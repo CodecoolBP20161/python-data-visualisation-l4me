@@ -141,19 +141,16 @@ class TextBox():
 
         ultimate_hyper_magnum =  [[name[i], lista_color[i], exchanged_budget[i], currency[i]] for i in range(len(name))]
 
-        #ultimate = [[x, exchanged_budget[i]] for i, x in enumerate(name_color)]
-        print(ultimate_hyper_magnum)
-
         text_boxes = []
         counter = 0
         for i in ultimate_hyper_magnum:
             if i[3] == 'GBP':
                 i[0] = 'BREXIT'
-                i[1] = (255,255,255)
+                i[1] = (0,0,0)
             elif i[3] == 'USD':
-                i[1] = (0,random.randint(100,200), 0)
+                i[1] = (0,random.randint(20,255), 0)
             else:
-                i[1] = (0,0, random.randint(100,200))
+                i[1] = (0,0, random.randint(20,255))
 
             text = i[0]
             color = i[1]
@@ -164,8 +161,7 @@ class TextBox():
         #for i in text_boxes:
          #   print(i.text, i.size, i.color)
 
-        return ultimate_hyper_magnum
-
+        return text_boxes
 
 
     @staticmethod
