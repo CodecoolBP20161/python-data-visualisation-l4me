@@ -98,12 +98,33 @@ class TextBox():
             text_boxes.append(cls(text,size,color))
             counter += 1
 
+        #for i in text_boxes:
+         #   print(i.text, i.size, i.color)
+
+        return text_boxes
+
+    @classmethod
+    def len_name(cls):
+        data = Db.execute_query("SELECT name,  main_color FROM project WHERE name !='None' ORDER BY LENGTH(name) DESC")
+        name = [x[0] for x in data]
+        lista_color = [cls.normalize_color(x[1]) for x in data]
+        ultimate = [[x, lista_color[i]] for i, x in enumerate(name)]
+
+        text_boxes = []
+        counter = 0
+        for i in ultimate:
+            text = i[0]
+            size = cls.size_calculate(counter)
+            color = tuple(i[1])
+            text_boxes.append(cls(text, size, color))
+            counter += 1
+
+
+
         for i in text_boxes:
             print(i.text, i.size, i.color)
 
         return text_boxes
-
-
 
     @staticmethod
     def size_calculate(index):
@@ -134,3 +155,4 @@ class TextBox():
 # TextBox.project()
 # TextBox.client()
 # TextBox.date()
+TextBox.len_name()
