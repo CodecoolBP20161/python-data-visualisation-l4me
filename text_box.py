@@ -1,5 +1,5 @@
 from db import Db
-from datetime import datetime
+import random
 
 
 class TextBox():
@@ -58,7 +58,6 @@ class TextBox():
         lista_color = [cls.normalize_color(i[2]) for i in data if i[0] != None]
         currency = [(i[3]) for i in data if i[0] != None]
         budget = [i[1] for i in data if i[0] != None]
-
         currency = map(int, currency)
         budget = map(float, budget)
         exchanged_budget = [a*b for a,b in zip(budget, currency)]
@@ -126,6 +125,49 @@ class TextBox():
 
         return text_boxes
 
+    @classmethod
+    def easteregg(cls):
+        data = Db.execute_query("SELECT name, budget_value, budget_currency, main_color, CASE WHEN budget_currency ='EUR' THEN '315' WHEN budget_currency = 'USD' THEN '260' WHEN budget_currency = 'GBP' THEN '400' ELSE budget_currency END FROM project WHERE name !='None'")
+        name = [x[0] for x in data]
+        lista_color = [cls.normalize_color(x[3]) for x in data]
+        currency = [x[2] for x in data]
+
+        budget_value = [i[1] for i in data]
+        budget_currency = [i[4] for i in data]
+
+        budget_value = map(float, budget_value)
+        budget_currency = map(int, budget_currency)
+        exchanged_budget = [a*b for a, b in zip(budget_value, budget_currency)]
+
+        ultimate_hyper_magnum =  [[name[i], lista_color[i], exchanged_budget[i], currency[i]] for i in range(len(name))]
+
+        #ultimate = [[x, exchanged_budget[i]] for i, x in enumerate(name_color)]
+        print(ultimate_hyper_magnum)
+
+        text_boxes = []
+        counter = 0
+        for i in ultimate_hyper_magnum:
+            if i[3] == 'GBP':
+                i[0] = 'BREXIT'
+                i[1] = (255,255,255)
+            elif i[3] == 'USD':
+                i[1] = (0,random.randint(100,200), 0)
+            else:
+                i[1] = (0,0, random.randint(100,200))
+
+            text = i[0]
+            color = i[1]
+            size = cls.size_calculate(counter)
+            text_boxes.append(cls(text,size,color))
+            counter += 1
+
+        #for i in text_boxes:
+         #   print(i.text, i.size, i.color)
+
+        return ultimate_hyper_magnum
+
+
+
     @staticmethod
     def size_calculate(index):
         if index < 1:
@@ -152,7 +194,8 @@ class TextBox():
 
 
 
-# TextBox.project()
+#TextBox.project()
 # TextBox.client()
 # TextBox.date()
-TextBox.len_name()
+#TextBox.len_name()
+TextBox.easteregg()
