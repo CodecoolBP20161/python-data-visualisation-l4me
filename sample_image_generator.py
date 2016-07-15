@@ -5,7 +5,7 @@ import random
 from text_box import TextBox
 
 
-def image_generator(text_boxes):
+def image_generator(text_boxes, coloring):
     img = Image.new("RGB", (600, 600), "lightgrey")
     font_size = [8, 16, 22, 26, 46]
     fonts = [ImageFont.truetype("Font_1.ttf", font_size[i]) for i in range(5)]
@@ -13,10 +13,16 @@ def image_generator(text_boxes):
     available = [True]*400
 
     for i in text_boxes:
-        text_box = Image.new("RGB", sizes[i.size], i.color)
+        if coloring == 1:
+            bg = i.color
+            text_color = (255, 255, 255)
+        else:
+            bg = ("lightgrey")
+            text_color = i.color
+        text_box = Image.new("RGB", sizes[i.size], bg)
         draw = ImageDraw.Draw(text_box)
         w, h = draw.textsize(i.text, fonts[i.size])
-        draw.text(((sizes[i.size][0]-w)/2, (sizes[i.size][1]-h)/2), i.text, (255, 255, 255), fonts[i.size])
+        draw.text(((sizes[i.size][0]-w)/2, (sizes[i.size][1]-h)/2), i.text, text_color, fonts[i.size])
         free = False
         while not free:
             x = random.randrange(10-i.size)

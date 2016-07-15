@@ -142,11 +142,11 @@ class TextBox():
                     i[0] = 'BREXIT'
                     i[1] = (0, 0, 0)
                 else:
-                    i[1] = (random.randint(20, 255), 0, 0)
+                    i[1] = (random.choice([50, 100, 150, 200, 250]), 0, 0)
             elif i[3] == 'USD':
-                i[1] = (0, random.randint(20, 255), 0)
+                i[1] = (0, random.choice([50, 100, 150, 200, 250]), 0)
             else:
-                i[1] = (0, 0, random.randint(20, 255))
+                i[1] = (0, 0, random.choice([50, 100, 150, 200, 250]))
 
             text = i[0]
             color = i[1]
