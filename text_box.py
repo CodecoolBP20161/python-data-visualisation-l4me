@@ -115,7 +115,7 @@ class TextBox():
         return text_boxes
 
     @classmethod
-    def easteregg(cls):
+    def easteregg(cls, extra):
         data = Db.execute_query('''SELECT name, budget_value, budget_currency, main_color,
                                 CASE WHEN budget_currency='EUR' THEN '315'
                                 WHEN budget_currency='USD' THEN '260'
@@ -138,8 +138,11 @@ class TextBox():
         counter = 0
         for i in ultimate_hyper_magnum:
             if i[3] == 'GBP':
-                i[0] = 'BREXIT'
-                i[1] = (0, 0, 0)
+                if extra:
+                    i[0] = 'BREXIT'
+                    i[1] = (0, 0, 0)
+                else:
+                    i[1] = (random.randint(20, 255), 0, 0)
             elif i[3] == 'USD':
                 i[1] = (0, random.randint(20, 255), 0)
             else:

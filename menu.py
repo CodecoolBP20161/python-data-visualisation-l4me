@@ -13,7 +13,7 @@ def print_menu(title, options,exit_message):
     for i in options:
         print("("+str(counter)+")" + "\t" + str(i))
         counter += 1
-    print("(0)" + "\t" + "exit_message")
+    print("(0)" + "\t" + exit_message)
 
 def menu():
 
@@ -43,7 +43,10 @@ def choice():
         sample_image_generator.image_generator(TextBox.len_name())
 
     elif choice == 5:
-        sample_image_generator.image_generator(TextBox.easteregg())
+        sample_image_generator.image_generator(TextBox.easteregg(0))
+
+    elif choice == 5555:
+        sample_image_generator.image_generator(TextBox.easteregg(1))
 
     elif choice == 0:
         sys.exit()
