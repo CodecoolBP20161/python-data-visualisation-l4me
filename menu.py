@@ -21,7 +21,7 @@ def menu():
                "Project",
                "Date",
                "Name lenght",
-               "Easteregg"]
+               "Currency filter"]
 
     print_menu("Main menu", options, "Exit program")
 
