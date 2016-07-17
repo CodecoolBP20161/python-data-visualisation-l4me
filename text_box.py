@@ -10,164 +10,58 @@ class TextBox():
 
     @classmethod
     def client(cls):
-        data = Db.execute_query("SELECT company_name, main_color FROM project")
-        lista = [i[0] for i in data]
-        lista_color = [cls.normalize_color(i[1]) for i in data]
-        clients = dict(zip(lista, [0] * len(lista)))
-        for i in lista:
-            clients[i] += 1
-        clients_list = list(sorted(clients, key=clients.get, reverse=True))
-        ultimate = [[x, lista_color[i]] for i, x in enumerate(lista)]
+        data = [[i[0], cls.normalize_color(i[1])]
+                for i in Db.execute_query("SELECT company_name, main_color FROM project")]
+        clients_list = sorted([[i, len([j for j in data if j[0] == i])] for i in set([i[0] for i in data])],
+                              key=lambda i: i[1], reverse=True)
 
-        counter = 0
         text_boxes = []
-        for i in clients_list:
-            avg_color = [0, 0, 0]
-            for j in ultimate:
-                if i == j[0]:
-                    avg_color[0] += j[1][0]
-                    avg_color[1] += j[1][1]
-                    avg_color[2] += j[1][2]
-            avg_color[0] //= clients[i]
-            avg_color[1] //= clients[i]
-            avg_color[2] //= clients[i]
-            text = i
-            if counter < 1:
-                size = 4
-            elif counter < 5:
-                size = 3
-            elif counter < 13:
-                size = 2
-            elif counter < 27:
-                size = 1
-            else:
-                size = 0
-            color = tuple(avg_color)
-            text_boxes.append(cls(text, size, color))
-            counter += 1
+        for i, k in enumerate(clients_list):
+            color = [sum([i[1][j] // k[1] for i in data if i[0] == k[0]]) for j in range(3)]
+            text_boxes.append(cls(k[0], cls.size_calculate(i, 1), tuple(color)))
 
         return text_boxes
 
     @classmethod
     def project(cls):
-        data = Db.execute_query('''SELECT name, budget_value, main_color,
-                                CASE WHEN budget_currency='EUR' THEN '315'
-                                WHEN budget_currency='USD' THEN '260'
-                                WHEN budget_currency='GBP' THEN '400'
-                                ELSE budget_currency END FROM project''')
-        project_lista = [i[0] for i in data if i[0] is not None]
-        lista_color = [cls.normalize_color(i[2]) for i in data if i[0] is not None]
-        currency = [(i[3]) for i in data if i[0] is not None]
-        budget = [i[1] for i in data if i[0] is not None]
-        currency = map(int, currency)
-        budget = map(float, budget)
-        exchanged_budget = [a*b for a, b in zip(budget, currency)]
+        data = sorted([[i[0], float(i[1])*cls.currency_exchange(i[3]), cls.normalize_color(i[2])]
+                      for i in Db.execute_query("SELECT name, budget_value, main_color, budget_currency FROM project")
+                      if i[0] is not None], key=lambda i: i[1], reverse=True)
 
-        ultimate = [[x, lista_color[i]] for i, x in enumerate(project_lista)]
-        a_ultimate = [[x[0], x[1], exchanged_budget[i]] for i, x in enumerate(ultimate)]
-        a_ultimate = list(sorted(a_ultimate, key=lambda x: x[2], reverse=True))
-
-        text_boxes = []
-        counter = 0
-        for i in a_ultimate:
-            text = i[0]
-            color = tuple(i[1])
-            size = cls.size_calculate(counter)
-            text_boxes.append(cls(text, size, color))
-            counter += 1
-
-        return text_boxes
+        return [cls(k[0], cls.size_calculate(i), tuple(k[2])) for i, k in enumerate(data)]
 
     @classmethod
     def date(cls):
-        data = Db.execute_query("SELECT name, main_color FROM project WHERE name != 'None' ORDER BY duedate DESC")
-        name = [x[0] for x in data]
-        lista_color = [cls.normalize_color(x[1]) for x in data]
-        ultimate = [[x, lista_color[i]] for i, x in enumerate(name)]
+        data = [[i[0], cls.normalize_color(i[1])] for i in
+                Db.execute_query("SELECT name, main_color FROM project WHERE name != 'None' ORDER BY duedate DESC")]
 
-        text_boxes = []
-        counter = 0
-        for i in ultimate:
-            text = i[0]
-            size = cls.size_calculate(counter)
-            color = tuple(i[1])
-            text_boxes.append(cls(text, size, color))
-            counter += 1
-
-        return text_boxes
+        return [cls(k[0], cls.size_calculate(i), tuple(k[1])) for i, k in enumerate(data)]
 
     @classmethod
     def len_name(cls):
-        data = Db.execute_query("SELECT name,  main_color FROM project WHERE name !='None' ORDER BY LENGTH(name) DESC")
-        name = [x[0] for x in data]
-        lista_color = [cls.normalize_color(x[1]) for x in data]
-        ultimate = [[x, lista_color[i]] for i, x in enumerate(name)]
+        data = sorted([[i[0], cls.normalize_color(i[1])] for i in
+                      Db.execute_query('''SELECT name,  main_color FROM project
+                      WHERE name !='None' ORDER BY LENGTH(name) DESC''')], key=lambda i: len(i[0]), reverse=True)
 
-        text_boxes = []
-        counter = 0
-        for i in ultimate:
-            text = i[0]
-            size = cls.size_calculate(counter)
-            color = tuple(i[1])
-            text_boxes.append(cls(text, size, color))
-            counter += 1
-
-        return text_boxes
+        return [cls(k[0], cls.size_calculate(i), tuple(k[1])) for i, k in enumerate(data)]
 
     @classmethod
     def easteregg(cls, extra):
-        data = Db.execute_query('''SELECT name, budget_value, budget_currency, main_color,
-                                CASE WHEN budget_currency='EUR' THEN '315'
-                                WHEN budget_currency='USD' THEN '260'
-                                WHEN budget_currency='GBP' THEN '400'
-                                ELSE budget_currency END FROM project WHERE name !='None' ''')
-        name = [x[0] for x in data]
-        lista_color = [cls.normalize_color(x[3]) for x in data]
-        currency = [x[2] for x in data]
+        data = sorted([[i[0], cls.currency_coloring(i[2]), float(i[1])*cls.currency_exchange(i[2]), i[2]] for i in
+                      Db.execute_query('''SELECT name, budget_value, budget_currency
+                      FROM project WHERE name !='None' ''')], key=lambda i: i[2], reverse=True)
 
-        budget_value = [i[1] for i in data]
-        budget_currency = [i[4] for i in data]
+        if extra:
+            data = [["BREXIT", (0, 0, 0)] if i[3] == "GBP" else [i[0], i[1]] for i in data]
 
-        budget_value = map(float, budget_value)
-        budget_currency = map(int, budget_currency)
-        exchanged_budget = [a*b for a, b in zip(budget_value, budget_currency)]
-
-        ultimate_hyper_magnum = [[name[i], lista_color[i], exchanged_budget[i], currency[i]] for i in range(len(name))]
-
-        text_boxes = []
-        counter = 0
-        for i in ultimate_hyper_magnum:
-            if i[3] == 'GBP':
-                if extra:
-                    i[0] = 'BREXIT'
-                    i[1] = (0, 0, 0)
-                else:
-                    i[1] = (random.choice([50, 100, 150, 200, 250]), 0, 0)
-            elif i[3] == 'USD':
-                i[1] = (0, random.choice([50, 100, 150, 200, 250]), 0)
-            else:
-                i[1] = (0, 0, random.choice([50, 100, 150, 200, 250]))
-
-            text = i[0]
-            color = i[1]
-            size = cls.size_calculate(counter)
-            text_boxes.append(cls(text, size, color))
-            counter += 1
-
-        return text_boxes
+        return [cls(k[0], cls.size_calculate(i), tuple(k[1])) for i, k in enumerate(data)]
 
     @staticmethod
-    def size_calculate(index):
-        if index < 1:
-            return 4
-        elif index < 5:
-            return 3
-        elif index < 17:
-            return 2
-        elif index < 42:
-            return 1
-        else:
-            return 0
+    def size_calculate(index, version=0):
+        size = 4
+        for i in [[1, 1], [5, 5], [17, 13], [42, 27]]:
+            size = size-1 if index >= i[version] else size
+        return size
 
     @staticmethod
     def normalize_color(var):
@@ -178,3 +72,12 @@ class TextBox():
             temp.append(int(i.translate({ord("a"): "10", ord("b"): "11", ord("c"): "12",
                                          ord('d'): "13", ord('e'): "14", ord('f'): "15"})) * 16)
         return temp
+
+    @staticmethod
+    def currency_exchange(curr):
+        return {"EUR": 315, "USD": 260, "GBP": 400}[curr]
+
+    @staticmethod
+    def currency_coloring(curr):
+        options = random.choice([50, 100, 150, 200, 250])
+        return {"EUR": (0, 0, options), "USD": (0, options, 0), "GBP": (options, 0, 0)}[curr]

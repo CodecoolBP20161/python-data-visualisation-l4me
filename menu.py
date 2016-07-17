@@ -4,7 +4,7 @@ import sample_image_generator
 from text_box import TextBox
 
 
-def print_menu(title, options,exit_message):
+def print_menu(title, options, exit_message):
 
     counter = 1
     print (30 * '-')
@@ -14,6 +14,7 @@ def print_menu(title, options,exit_message):
         print("("+str(counter)+")" + "\t" + str(i))
         counter += 1
     print("(0)" + "\t" + exit_message)
+
 
 def menu():
 

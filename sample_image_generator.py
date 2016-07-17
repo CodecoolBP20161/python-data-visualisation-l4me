@@ -7,22 +7,18 @@ from text_box import TextBox
 
 def image_generator(text_boxes, coloring):
     img = Image.new("RGB", (600, 600), "lightgrey")
-    font_size = [8, 16, 22, 26, 46]
-    fonts = [ImageFont.truetype("Font_1.ttf", font_size[i]) for i in range(5)]
-    sizes = [(60, 15), (120, 30), (180, 45), (240, 60), (300, 75)]
+    fonts = [ImageFont.truetype("Font_1.ttf", i) for i in [8, 16, 22, 26, 46]]
     available = [True]*400
 
     for i in text_boxes:
-        if coloring == 1:
-            bg = i.color
-            text_color = (255, 255, 255)
-        else:
-            bg = ("lightgrey")
-            text_color = i.color
-        text_box = Image.new("RGB", sizes[i.size], bg)
+        bg = [i.color, "lightgrey"]
+        text_color = ["white", i.color]
+        box_size = (60*(i.size+1), 15*(i.size+1))
+        text_box = Image.new("RGB", box_size, bg[coloring-1])
         draw = ImageDraw.Draw(text_box)
         w, h = draw.textsize(i.text, fonts[i.size])
-        draw.text(((sizes[i.size][0]-w)/2, (sizes[i.size][1]-h)/2), i.text, text_color, fonts[i.size])
+        draw.text(((box_size[0]-w)/2, (box_size[1]-h)/2), i.text, text_color[coloring-1], fonts[i.size])
+
         free = False
         while not free:
             x = random.randrange(10-i.size)
@@ -35,5 +31,6 @@ def image_generator(text_boxes, coloring):
             for k in range(i.size+1):
                 available[(y+j)*10+(x+k)] = False
         img.paste(text_box, (x*60, y*15))
+
     img.save('sample-out.png')
     img.show()
