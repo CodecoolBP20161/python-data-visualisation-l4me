@@ -39,9 +39,8 @@ class TextBox():
 
     @classmethod
     def len_name(cls):
-        data = sorted([[i[0], cls.normalize_color(i[1])] for i in
-                      Db.execute_query('''SELECT name,  main_color FROM project
-                      WHERE name !='None' ORDER BY LENGTH(name) DESC''')], key=lambda i: len(i[0]), reverse=True)
+        data = [[i[0], cls.normalize_color(i[1])] for i in Db.execute_query('''SELECT name,  main_color FROM project
+                WHERE name !='None' ORDER BY LENGTH(name) DESC''')]
 
         return [cls(k[0], cls.size_calculate(i), tuple(k[1])) for i, k in enumerate(data)]
 
